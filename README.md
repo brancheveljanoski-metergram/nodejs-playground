@@ -3,7 +3,11 @@
 ## Prerequisites
 
 Clone the repository and create your own branch named "name-surname".\
-Finish the tasks on that branch and push once you are finished.\
+Commit and push the changes for when you finish each part of the following parts of the task:\
+GET APIs\
+Add new movie\
+Edit movie\
+Delete movie\
 Use https://www.postman.com/ to test the APIs
 
 ## Node.js API
