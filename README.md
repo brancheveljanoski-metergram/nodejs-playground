@@ -3,7 +3,7 @@
 ## Prerequisites
 
 Clone the repository and create your own branch named "name-surname".\
-Commit and push the changes for when you finish each part of the following parts of the task:\
+Commit and push the changes when you finish each of the following parts of the task:\
 GET APIs\
 Add new movie\
 Edit movie\
