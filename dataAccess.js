@@ -14,7 +14,7 @@ function getAll(){
 
 function getByID(ID){
    const movie = movies.find(movie => movie.imdbID == ID);
-   movie;
+   return movie;
 }
 
 function getByGenre(genre){
@@ -27,14 +27,14 @@ function getByActor(actor){
     actorMovies;
 }
 
-function sortByRating(isASC){
+function sortByRating(isASC, movieList){
     let sortedMovies;
 
     if(isASC){
-        sortedMovies=movies
+        sortedMovies=movieList
         .sort((movieA, movieB) => movieA.imdbRating - movieB.imdbRating)
     }else{
-        sortedMovies=movies
+        sortedMovies=movieList
         .sort((movieA, movieB) => movieB.imdbRating - movieA.imdbRating)
     }
     
@@ -130,7 +130,6 @@ function deleteMovie(movieID){
 
     return false;
 }
-
 
 
 module.exports = {getAll, getByID, getByActor, getByGenre, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie};
