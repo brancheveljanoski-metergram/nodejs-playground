@@ -9,22 +9,22 @@ let movies = JSON.parse(rawData);
 //---------------------JSON Reading-----------------------
 
 function getAll(){
-    return JSON.stringify(movies);
+    return movies;
 }
 
 function getByID(ID){
    const movie = movies.find(movie => movie.imdbID == ID);
-   return JSON.stringify(movie);
+   movie;
 }
 
 function getByGenre(genre){
     const genreMovies = movies.filter(movie =>movie.Genre.includes(genre));
-    return JSON.stringify(genreMovies);
+    genreMovies;
 }
 
 function getByActor(actor){
     const actorMovies = movies.filter(movie =>movie.Actors.includes(actor));
-    return JSON.stringify(actorMovies);
+    actorMovies;
 }
 
 function sortByRating(isASC){
@@ -41,7 +41,7 @@ function sortByRating(isASC){
     const movieTitleAndRating = sortedMovies
     .map(m => {return {Title: m.Title, imdbRating: m.imdbRating}})
 
-    return JSON.stringify(movieTitleAndRating);
+    return movieTitleAndRating;
 }
 
 function totalLengthOfMovies(){
@@ -58,7 +58,7 @@ function getUrls(){
         return `https://www.imdb.com/title/${movie.imdbID}/`;
     });
 
-    return JSON.stringify(urls);
+    return urls;
 }
 
 
@@ -76,7 +76,7 @@ function allLanguagues(){
         return languages.concat(movie.Language.split(", "));
     }, languages = [])
 
-    return JSON.stringify([...new Set(allLanguages)]);
+    return [...new Set(allLanguages)];
 }
 
 
@@ -131,3 +131,6 @@ function deleteMovie(movieID){
     return false;
 }
 
+
+
+module.exports = {getAll, getByID, getByActor, getByGenre, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie};
