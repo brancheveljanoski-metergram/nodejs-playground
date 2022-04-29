@@ -91,8 +91,8 @@ function writeToJSON(data){
 }
 
 function addMovie(newMovie){
+    
     if(getByID(newMovie.imdbID) != undefined){
-        console.log(false);
         return false;
     }
     movies.push(newMovie);
@@ -102,7 +102,6 @@ function addMovie(newMovie){
     };
     
     return false;
-    
 }
 
 
