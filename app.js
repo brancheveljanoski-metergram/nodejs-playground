@@ -53,6 +53,43 @@ app.get('/movies/:rating',(req,res)=>{
 })
 
 
+//Get movies data
+app.get('/movies/lenght', (req,res)=>{
+    const result = movies.reduce((sum, movie) =>{
+        const lenght = parseInt(movie.Runtime);
+        return lenght ? lenght + sum : lenght;
+    },0)
+
+    res.json(result)
+})
+
+app.get('/movies/imdbUrls',(req,res)=>{
+    const url = movies.map(movie => {
+        return `https://www.imdb.com/title/${movie.imdbID}/`;
+    })
+
+    res.json(url);
+})
+
+app.get('/movies/votes',(req,res)=>{
+    const result = movies.reduce((sum, movie) => {
+        const votes = parseInt(movie.imdbVotes.replace(/,/g, ''));
+        return votes ? votes + sum : sum;
+    }, 0);
+
+    res.json(result)
+})
+
+app.get('/movies/languages',(req,res)=>{
+    const allLagnuages = movies.reduce((languages, movie)=> {
+        return languages.concat(movie.Language.split(", "));
+    }, languages = [])
+
+    const unique = [...new Set(allLagnuages)];
+    res.json(unique);
+
+})
+
 //Body Parses Middleware
 app.use(express.json());
 app.use(express.urlencoded({extended:false}))
