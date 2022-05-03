@@ -11,18 +11,22 @@ app.get('/movies/', (req, res) => {
 app.get('/movies/filtering', (req, res)=>{
     const {genre, actor, imdbSort} = req.query;
     let allMovies = movies.getAllMovies();
+    
     if(genre)
-        allMovies = allMovies.filter(m =>m.Genre.includes(genre));
+        allMovies = movies.filterByGenre(`${genre}`);
 
-    if(actor)
-        allMovies = allMovies.filter(m =>m.Actors.includes(actor));
+    else if(actor)
+        allMovies = movies.filterByActor(`${actor}`);
 
-    if(imdbSort){
+    else if(imdbSort){
         if(imdbSort === 'DESC'||'desc')
             allMovies = movies.sortByRating(true, allMovies)
         else if(imdbSort === 'ASC'||'asc')
             allMovies = movies.sortByRating(false, allMovies)
     }
+    else
+        res.send('Invalid filter!')
+        
     res.json(allMovies);
 });
 

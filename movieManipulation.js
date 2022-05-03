@@ -22,13 +22,11 @@ function sortByRating(isDESC,allMovies){
     }else{
         result=allMovies.sort((x, y) => x.imdbRating - y.imdbRating)
     }
-    const resultFinal = result.map(m => {return {Title: m.Title, imdbRating: m.imdbRating}})
-    return resultFinal;
+    return resultFinal = result.map(m => ({Title: m.Title, imdbRating: m.imdbRating}))
 }
 
-function getSpecificMovie(ID){
-    const movie = movies.find(movie => movie.imdbID == ID);
-    return movie;
+function getSpecificMovie(id){
+    return movie = movies.find(movie => movie.imdbID == id);
 }
 
 function totalLengthOfAllMovies(){
@@ -41,7 +39,7 @@ function totalLengthOfAllMovies(){
     var rhours = Math.floor(hours);
     var minutes = (hours - rhours) * 60;
     var rminutes = Math.round(minutes);
-    return rhours + " hours and " + rminutes + " minutes.";
+    return `${rhours} hours and ${rminutes} minutes.`
 }
 
 function imdbUrls(){
@@ -68,16 +66,21 @@ function allLanguagues(){
     const allLanguages = movies.reduce((languages, movie)=> {
         return languages.concat(movie.Language.split(", "));
     }, languages = [])
-    var unique = allLanguages.filter(onlyUnique);
-    return unique;
+    return unique = allLanguages.filter(onlyUnique);
 }
 
 function writeJSON(data){
-    fs.writeFile(file, JSON.stringify(data, null, "\t"), (err)=>{
-        if(err) 
-            return false;
-    });
+    // fs.writeFile(file, JSON.stringify(data, null, "\t"), (err)=>{
+    //     if(err) 
+    //         return false;
+    // });
 
+    // return true;
+    try {
+        fs.writeFileSync(file, JSON.stringify(data, null, "\t"));
+    } catch (err) {
+        return false;
+    }
     return true;
 }
 
