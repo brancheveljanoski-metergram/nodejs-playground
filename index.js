@@ -8,7 +8,7 @@ app.get('/movies/', (req, res) => {
     res.json(movies.getAllMovies());
 });
 
-app.get('/movies/query', (req, res)=>{
+app.get('/movies/filtering', (req, res)=>{
     const {genre, actor, imdbSort} = req.query;
     let allMovies = movies.getAllMovies();
     if(genre)
