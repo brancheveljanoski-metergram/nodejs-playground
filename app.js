@@ -12,11 +12,11 @@ app.use(express.json());
 app.use(express.static(path.resolve('./public')));
 
 
-app.get('/api/movies/', (req, res) => {
+app.get('/movies', (req, res) => {
     res.status(200).json(movies.getAll());
 });
 
-app.get('/api/movies/query', (req, res) => {
+app.get('/movies/query', (req, res) => {
 
     const { genre, actor, imdbSort } = req.query;
     let movieList = movies.getAll();
@@ -42,7 +42,7 @@ app.get('/api/movies/query', (req, res) => {
 
 });
 
-app.get('/api/movies/:imdbID', (req, res) => {
+app.get('/movies/:imdbID', (req, res) => {
     const imdbID = req.params.imdbID;
     const movie = movies.getByID(imdbID);
     if (!movie) {
@@ -51,24 +51,24 @@ app.get('/api/movies/:imdbID', (req, res) => {
     res.status(200).json(movie);
 });
 
-app.get('/api/movies/data/length', (req, res) => {
+app.get('/movies/data/length', (req, res) => {
     res.status(200).json(`${movies.totalLengthOfMovies()} min`);
 });
 
-app.get('/api/movies/data/urls', (req, res) => {
+app.get('/movies/data/urls', (req, res) => {
     res.status(200).json(movies.getUrls());
 });
 
-app.get('/api/movies/data/votes', (req, res) => {
+app.get('/movies/data/votes', (req, res) => {
     res.status(200).json(Number(movies.totalImdbVotes()));
 });
 
-app.get('/api/movies/data/languages', (req, res) => {
+app.get('/movies/data/languages', (req, res) => {
     res.status(200).json(movies.allLanguagues());
 });
 
 
-app.post('/api/movies', (req, res) => {
+app.post('/movies', (req, res) => {
 
     const { error } = validator.validMovie.validate(req.body);
 
@@ -78,13 +78,13 @@ app.post('/api/movies', (req, res) => {
     }
 
     if (movies.addMovie(req.body)) {
-        res.status(201).send(`/api/movies/${req.body.imdbID}`);
+        res.status(201).send(`/movies/${req.body.imdbID}`);
     }
 
     res.status(400).end();
 });
 
-app.put('/api/movies', (req, res) => {
+app.put('/movies', (req, res) => {
 
     const { error } = validator.validMovie.validate(req.body);
 
@@ -100,7 +100,7 @@ app.put('/api/movies', (req, res) => {
             res.status(200).json({
                 status: 'ok',
                 data: movies.getByID(movieID),
-                path: `/api/movies/${req.body.imdbID}`
+                path: `/movies/${req.body.imdbID}`
             });
         }
         return;
@@ -108,7 +108,7 @@ app.put('/api/movies', (req, res) => {
         res.status(201).json({
             status: 'created',
             data: movies.getByID(movieID),
-            path: `/api/movies/${req.body.imdbID}`
+            path: `/movies/${req.body.imdbID}`
         });
         return;
     }
@@ -116,19 +116,12 @@ app.put('/api/movies', (req, res) => {
     res.status(400).end();
 });
 
-app.delete('/api/movies/:imdbID', (req, res) => {
+app.delete('/movies/:imdbID', (req, res) => {
     const movieID = req.params.imdbID;
-    try {
-        movies.deleteMovie(movieID);
-    } catch (error) {
-        console.log(error);
-        res.status(400).end(error.message);
+    if (movies.deleteMovie(movieID)) {
+        res.status(200).end();
     }
-    res.status(200).end();
-    // if(movies.deleteMovie(movieID)){
-    //     res.status(200).end();
-    // }
-    // res.status(400).end();
+    res.status(400).end();
 });
 
 app.all('*', (req, res) => {
