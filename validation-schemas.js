@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 
-const validMovie= Joi.object({
+const validMovie = Joi.object({
 
     Title: Joi.string(),
     Year: Joi.number()
@@ -44,7 +44,7 @@ const validMovie= Joi.object({
         .min(1)
         .max(15),
     imdbID: Joi.string()
-    .pattern(new RegExp('(tt|nm|co|ev|ch|ni)\\w{5,10}')),
+        .pattern(new RegExp('(tt|nm|co|ev|ch|ni)\\w{5,10}')),
     Type: Joi.string()
         .max(20),
     totalSeasons: Joi.number()
@@ -54,9 +54,9 @@ const validMovie= Joi.object({
     Images: Joi.array()
         .items(
             Joi.string()
-            .pattern(new RegExp('[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'))
-        )  
-    
+                .pattern(new RegExp('[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'))
+        )
+
 });
 
-module.exports = {validMovie};
+module.exports = { validMovie };

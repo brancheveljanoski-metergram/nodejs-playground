@@ -8,46 +8,46 @@ let movies = JSON.parse(rawData);
 
 //---------------------JSON Reading-----------------------
 
-function getAll(){
+function getAll() {
     return movies;
 }
 
-function getByID(ID){
-   return movies.find(movie => movie.imdbID == ID);
-   
+function getByID(ID) {
+    return movies.find(movie => movie.imdbID == ID);
+
 }
 
-function filterBy(filter, value){
+function filterBy(filter, value) {
     return movies.filter(m => m[filter].includes(value));
 }
 
-function sortByRating(isASC, movieList){
+function sortByRating(isASC, movieList) {
     let sortedMovies;
 
-    if(isASC){
-        sortedMovies=movieList
-        .sort((movieA, movieB) => movieA.imdbRating - movieB.imdbRating)
-    }else{
-        sortedMovies=movieList
-        .sort((movieA, movieB) => movieB.imdbRating - movieA.imdbRating)
+    if (isASC) {
+        sortedMovies = movieList
+            .sort((movieA, movieB) => movieA.imdbRating - movieB.imdbRating)
+    } else {
+        sortedMovies = movieList
+            .sort((movieA, movieB) => movieB.imdbRating - movieA.imdbRating)
     }
-    
+
     const movieTitleAndRating = sortedMovies
-    .map(m => ({Title: m.Title, imdbRating: m.imdbRating}))
+        .map(m => ({ Title: m.Title, imdbRating: m.imdbRating }))
 
     return movieTitleAndRating;
 }
 
-function totalLengthOfMovies(){
+function totalLengthOfMovies() {
 
-    return movies.reduce((total, movie)=> {
-        const movieLen= parseInt(movie.Runtime);
+    return movies.reduce((total, movie) => {
+        const movieLen = parseInt(movie.Runtime);
         return !isNaN(movieLen) ? movieLen + total : total;
     }, 0)
 
 }
 
-function getUrls(){
+function getUrls() {
 
     return movies.map(movie => {
         return `https://www.imdb.com/title/${movie.imdbID}/`;
@@ -56,7 +56,7 @@ function getUrls(){
 }
 
 
-function totalImdbVotes(){
+function totalImdbVotes() {
 
     return movies.reduce((total, movie) => {
         const movieVotes = parseInt(movie.imdbVotes.replace(/,/g, ''));
@@ -65,9 +65,9 @@ function totalImdbVotes(){
 
 }
 
-function allLanguagues(){
+function allLanguagues() {
 
-    const allLanguages = movies.reduce((languages, movie)=> (
+    const allLanguages = movies.reduce((languages, movie) => (
         languages.concat(movie.Language.split(", "))
     ), [])
 
@@ -77,7 +77,7 @@ function allLanguagues(){
 
 //----------------------JSON Writing----------------
 
-function writeToJSON(data){
+function writeToJSON(data) {
 
     try {
         fs.writeFileSync(path, JSON.stringify(data, null, "\t"));
@@ -87,37 +87,37 @@ function writeToJSON(data){
     return true;
 }
 
-function addMovie(newMovie){
-    
-    if(getByID(newMovie.imdbID) != undefined){
+function addMovie(newMovie) {
+
+    if (getByID(newMovie.imdbID) != undefined) {
         return false;
     }
     movies.push(newMovie);
-    
-    if(writeToJSON(movies)) {
+
+    if (writeToJSON(movies)) {
         return true
     };
-    
+
     return false;
 }
 
 
-function editMovie(editedMovie){
+function editMovie(editedMovie) {
     const movieIndex = movies.findIndex(movie => movie.imdbID == editedMovie.imdbID);
     movies[movieIndex] = editedMovie;
 
-    if(writeToJSON(movies)) {
+    if (writeToJSON(movies)) {
         return true
     };
 
     return false;
 }
 
-function deleteMovie(movieID){
+function deleteMovie(movieID) {
     const movieIndex = movies.findIndex(movie => movie.imdbID == movieID);
-    if(movieIndex != -1){
+    if (movieIndex != -1) {
         movies.splice(movieIndex, 1);
-        if(writeToJSON(movies)) {
+        if (writeToJSON(movies)) {
             return true
         };
 
@@ -128,4 +128,4 @@ function deleteMovie(movieID){
 }
 
 
-module.exports = {getAll, getByID, filterBy, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie};
+module.exports = { getAll, getByID, filterBy, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie };
