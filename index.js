@@ -58,7 +58,7 @@ app.post('/movies', (req, res)=>{
 
 app.delete('/movies/:imdbID', (req, res)=>{
     const id = req.params.imdbID;
-    if(movies.deleteMovie(id)){
+    if(movies.deleteExistingMovie(id)){
         res.end();
     }
     res.end();
