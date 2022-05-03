@@ -8,13 +8,11 @@ function getAllMovies(){
 }
 
 function filterByGenre(genre){
-    const genreMovies = movies.filter(movie =>movie.Genre.includes(genre));
-    genreMovies;
+    return genreMovies = movies.filter(movie =>movie.Genre.includes(genre));
 }
 
 function filterByActor(actor){
-    const actorMovies = movies.filter(movie =>movie.Actors.includes(actor));
-    actorMovies;
+    return actorMovies = movies.filter(movie =>movie.Actors.includes(actor));
 }
 
 function sortByRating(isDESC,allMovies){
