@@ -48,6 +48,22 @@ app.get('/movies/information/votes', (req, res)=>{
     res.json(movies.totalImdbVotes());
 });
 
+app.post('/movies', (req, res)=>{
+    if(err) return;
+    if(movies.addNewMovie(req.body)){
+        res.send(`/movies/${req.body.imdbID}`);
+    }
+    res.end();
+});
+
+app.delete('/movies/:imdbID', (req, res)=>{
+    const id = req.params.imdbID;
+    if(movies.deleteMovie(id)){
+        res.end();
+    }
+    res.end();
+});
+
 app.listen(port, ()=>{
     console.log(`Server is listening on port ${port}`);
 })

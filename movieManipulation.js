@@ -74,4 +74,35 @@ function allLanguagues(){
     return unique;
 }
 
-module.exports = {getAllMovies, filterByActor, filterByGenre, imdbUrls, sortByRating, getSpecificMovie, totalImdbVotes, totalLengthOfAllMovies, allLanguagues};
+function writeJSON(data){
+    fs.writeFile(file, JSON.stringify(data, null, "\t"), (err)=>{
+        if(err) 
+            return false;
+    });
+
+    return true;
+}
+
+function addNewMovie(movie){
+    if(getSpecificMovie(movie.imdbID) == undefined){
+        movies.push(movie);
+        if(writeJSON(movies)) {
+            return true
+        };
+    }
+    return false;
+}
+
+function deleteExistingMovie(id){
+    const index = movies.findIndex(m => m.imdbID == id);
+    if(index != -1){
+        movies.splice(index, 1);
+        if(writeJSON(movies)) {
+            return true
+        };
+        return false;
+    }
+    return false;
+}
+
+module.exports = {getAllMovies, filterByActor, filterByGenre, imdbUrls, sortByRating, getSpecificMovie, totalImdbVotes, totalLengthOfAllMovies, allLanguagues, addNewMovie, deleteExistingMovie};
