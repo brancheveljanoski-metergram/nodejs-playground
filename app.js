@@ -1,12 +1,16 @@
 const express = require('express');
-const { ClientRequest } = require('http');
-const movies = require('./dataAccess');
-const validator = require('./validationSchemas');
+const path = require('path');
+const movies = require('./data-access');
+const validator = require('./validation-schemas');
+
+
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(express.static(path.resolve('./public')));
+
 
 app.get('/api/movies/', (req, res) => {
     res.status(200).json(movies.getAll());
@@ -18,12 +22,13 @@ app.get('/api/movies/query', (req, res)=>{
     let movieList = movies.getAll();
 
     if(actor){
-        movieList = movieList.filter(movie =>movie.Actors.includes(actor));
+        movieList = movies.filterBy('Actors', actor)
     }
 
     if(genre){
-        movieList = movieList.filter(movie =>movie.Genre.includes(genre));
+        movieList = movies.filterBy('Genre', genre)
     }
+
     if(imdbSort){
         if(imdbSort === 'ASC'){
             movieList = movies.sortByRating(true, movieList)
@@ -99,8 +104,7 @@ app.put('/api/movies', (req, res)=>{
             });
         }
         return;
-    }
-    if(movies.addMovie(req.body)){
+    } else if(movies.addMovie(req.body)){
         res.status(201).json({
             status: 'created',
             data: movies.getByID(movieID),
@@ -114,13 +118,23 @@ app.put('/api/movies', (req, res)=>{
 
 app.delete('/api/movies/:imdbID', (req, res)=>{
     const movieID = req.params.imdbID;
-    if(movies.deleteMovie(movieID)){
-        res.status(200).end();
+    try {
+        movies.deleteMovie(movieID);
+    } catch (error) {
+        console.log(error);
+        res.status(400).end(error.message);
     }
-    res.status(400).end();
+    res.status(200).end();
+    // if(movies.deleteMovie(movieID)){
+    //     res.status(200).end();
+    // }
+    // res.status(400).end();
+});
+
+app.all('*', (req, res)=>{
+    res.status(404).sendFile(path.resolve('./public/notFound.html'));
 });
 
 app.listen(port, ()=>{
     console.log(`Server on port ${port}`);
 })
-

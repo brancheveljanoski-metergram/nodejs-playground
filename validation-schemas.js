@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const movies = require('./dataAccess');
+
 
 const validMovie= Joi.object({
 
@@ -31,7 +31,7 @@ const validMovie= Joi.object({
     Poster: Joi.string()
         .min(3)
         .max(1000)
-        .pattern(new RegExp('[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_\+.~#?&//=]*)')),
+        .pattern(new RegExp('[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)')),
     Metascore: [
         Joi.string().min(1).max(3),
         Joi.number().min(1).max(100)

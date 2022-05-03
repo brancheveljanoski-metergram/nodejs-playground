@@ -13,18 +13,12 @@ function getAll(){
 }
 
 function getByID(ID){
-   const movie = movies.find(movie => movie.imdbID == ID);
-   return movie;
+   return movies.find(movie => movie.imdbID == ID);
+   
 }
 
-function getByGenre(genre){
-    const genreMovies = movies.filter(movie =>movie.Genre.includes(genre));
-    genreMovies;
-}
-
-function getByActor(actor){
-    const actorMovies = movies.filter(movie =>movie.Actors.includes(actor));
-    actorMovies;
+function filterBy(filter, value){
+    return movies.filter(m => m[filter].includes(value));
 }
 
 function sortByRating(isASC, movieList){
@@ -39,42 +33,43 @@ function sortByRating(isASC, movieList){
     }
     
     const movieTitleAndRating = sortedMovies
-    .map(m => {return {Title: m.Title, imdbRating: m.imdbRating}})
+    .map(m => ({Title: m.Title, imdbRating: m.imdbRating}))
 
     return movieTitleAndRating;
 }
 
 function totalLengthOfMovies(){
-    const totalLen = movies.reduce((total, movie)=> {
+
+    return movies.reduce((total, movie)=> {
         const movieLen= parseInt(movie.Runtime);
         return !isNaN(movieLen) ? movieLen + total : total;
     }, 0)
 
-    return totalLen;
 }
 
 function getUrls(){
-    const urls = movies.map(movie => {
+
+    return movies.map(movie => {
         return `https://www.imdb.com/title/${movie.imdbID}/`;
     });
 
-    return urls;
 }
 
 
 function totalImdbVotes(){
-    const totalVotes = movies.reduce((total, movie) => {
+
+    return movies.reduce((total, movie) => {
         const movieVotes = parseInt(movie.imdbVotes.replace(/,/g, ''));
         return !isNaN(movieVotes) ? movieVotes + total : total;
     }, 0);
 
-    return totalVotes;
 }
 
 function allLanguagues(){
-    const allLanguages = movies.reduce((languages, movie)=> {
-        return languages.concat(movie.Language.split(", "));
-    }, languages = [])
+
+    const allLanguages = movies.reduce((languages, movie)=> (
+        languages.concat(movie.Language.split(", "))
+    ), [])
 
     return [...new Set(allLanguages)];
 }
@@ -83,10 +78,12 @@ function allLanguagues(){
 //----------------------JSON Writing----------------
 
 function writeToJSON(data){
-    fs.writeFile(path, JSON.stringify(data, null, "\t"), (err)=>{
-        if(err) return false;
-    });
 
+    try {
+        fs.writeFileSync(path, JSON.stringify(data, null, "\t"));
+    } catch (error) {
+        return false;
+    }
     return true;
 }
 
@@ -131,4 +128,4 @@ function deleteMovie(movieID){
 }
 
 
-module.exports = {getAll, getByID, getByActor, getByGenre, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie};
+module.exports = {getAll, getByID, filterBy, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie};
