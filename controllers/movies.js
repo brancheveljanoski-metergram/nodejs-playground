@@ -1,4 +1,5 @@
 let movies = require("../movie-manipulation");
+const { authSchema } = require("../helpers/validation_schema");
 
 const getMovies = (req, res) => {
   res.json(movies.getAllMovies());
@@ -42,12 +43,24 @@ const movieVotes = (req, res) => {
   res.json(movies.totalImdbVotes());
 };
 
-const newMovie = (req, res) => {
-  if (err) return;
-  if (movies.addNewMovie(req.body)) {
+const newMovie = async (req, res) => {
+  try {
+    const result = await authSchema.validateAsync(req.body);
+
+    const doesExist = await movies.findOne({ imdbID: result.imdbID });
+
+    if (doesExist)
+      throw createError.Conflict(
+        `A movie with id: ${result.imdbID} has already been registered`
+      );
+
+    const movie = new movies(result);
+    const savedMovie = await user.save();
     res.send(`/movies/${req.body.imdbID}`);
+  } catch (error) {
+    if (error.isJoi === true) error.status = 422;
+    next(error);
   }
-  res.end();
 };
 
 const movieDel = (req, res) => {

@@ -1,5 +1,6 @@
 const express = require("express");
 const movies = require("./controllers/movies.js");
+
 const app = express();
 const port = 5000;
 app.use(express.json());

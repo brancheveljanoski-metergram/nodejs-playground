@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/brancheveljanoski-metergram/nodejs-playground/issues"
   },
-  "homepage": "https://github.com/brancheveljanoski-metergram/nodejs-playground#readme"
+  "homepage": "https://github.com/brancheveljanoski-metergram/nodejs-playground#readme",
+  "dependencies": {
+    "joi": "^17.6.0"
+  }
 }
