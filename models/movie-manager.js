@@ -8,11 +8,31 @@ let movies = JSON.parse(rawData);
 
 //---------------------JSON Reading-----------------------
 
-function getAll() {
-    return movies;
+function getAll({ genre, actor, imdbSort }) {
+
+    let movieList = movies;
+
+    if (actor) {
+        movieList = filterBy('Actors', actor)
+    }
+
+    if (genre) {
+        movieList = filterBy('Genre', genre)
+    }
+
+    if (imdbSort) {
+        console.log(imdbSort);
+        if (imdbSort.toUpperCase() === 'ASC') {
+            movieList = sortByRating(true, movieList)
+        }
+        else if (imdbSort.toUpperCase() === 'DESC') {
+            movieList = sortByRating(false, movieList)
+        }
+    }
+    return movieList;
 }
 
-function getByID(ID) {
+function getSingle(ID) {
     return movies.find(movie => movie.imdbID == ID);
 
 }
@@ -38,42 +58,46 @@ function sortByRating(isASC, movieList) {
     return movieTitleAndRating;
 }
 
-function totalLengthOfMovies() {
+function getData(type) {
 
-    return movies.reduce((total, movie) => {
-        const movieLen = parseInt(movie.Runtime);
-        return !isNaN(movieLen) ? movieLen + total : total;
-    }, 0)
+    switch (type) {
+        case 'length':
+            {
+                const len = movies.reduce((total, movie) => {
+                    const movieLen = parseInt(movie.Runtime);
+                    return !isNaN(movieLen) ? movieLen + total : total;
+                }, 0)
 
+                return `${len} min`
+            }
+        case 'urls':
+
+            return movies.map(movie => {
+                return `https://www.imdb.com/title/${movie.imdbID}/`;
+            });
+
+        case 'votes':
+
+            return movies.reduce((total, movie) => {
+                const movieVotes = parseInt(movie.imdbVotes.replace(/,/g, ''));
+                return !isNaN(movieVotes) ? movieVotes + total : total;
+            }, 0);
+
+        case 'languages':
+            {
+
+                const allLanguages = movies.reduce((languages, movie) => (
+                    languages.concat(movie.Language.split(", "))
+                ), [])
+
+                return [...new Set(allLanguages)];
+            }
+
+        default:
+            return false;
+            break;
+    }
 }
-
-function getUrls() {
-
-    return movies.map(movie => {
-        return `https://www.imdb.com/title/${movie.imdbID}/`;
-    });
-
-}
-
-
-function totalImdbVotes() {
-
-    return movies.reduce((total, movie) => {
-        const movieVotes = parseInt(movie.imdbVotes.replace(/,/g, ''));
-        return !isNaN(movieVotes) ? movieVotes + total : total;
-    }, 0);
-
-}
-
-function allLanguagues() {
-
-    const allLanguages = movies.reduce((languages, movie) => (
-        languages.concat(movie.Language.split(", "))
-    ), [])
-
-    return [...new Set(allLanguages)];
-}
-
 
 //----------------------JSON Writing----------------
 
@@ -89,7 +113,7 @@ function writeToJSON(data) {
 
 function addMovie(newMovie) {
 
-    if (getByID(newMovie.imdbID) != undefined) {
+    if (getSingle(newMovie.imdbID) != undefined) {
         return false;
     }
     movies.push(newMovie);
@@ -128,4 +152,4 @@ function deleteMovie(movieID) {
 }
 
 
-module.exports = { getAll, getByID, filterBy, getUrls, sortByRating, totalImdbVotes, totalLengthOfMovies, allLanguagues, addMovie, editMovie, deleteMovie };
+module.exports = { getAll, getSingle, filterBy, sortByRating, addMovie, editMovie, deleteMovie, getData };
