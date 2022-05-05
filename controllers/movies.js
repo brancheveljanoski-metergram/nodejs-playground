@@ -55,12 +55,32 @@ const newMovie = async (req, res) => {
       );
 
     const movie = new movies(result);
-    const savedMovie = await user.save();
+    const savedMovie = await movie.save();
     res.send(`/movies/${req.body.imdbID}`);
   } catch (error) {
     if (error.isJoi === true) error.status = 422;
-    next(error);
   }
+};
+
+const updateMovie = async (req,res)=>{
+
+  const result = await authSchema.validateAsync(req.body);
+  const doesExist = await movies.findOne({ imdbID: result.imdbID })
+
+  try{
+    if(doesExist){
+      const updated = req.body;
+      movies.forEach(movie =>{
+        if(movie.Title === req.params.title){
+            movie.Title = updMovie.Title ? updMovie.Title : movie.Title;
+            res.json({msg: 'Movie updated', movie})
+        }
+    })
+    }
+  }catch(error){
+    if (error.isJoi === true) error.status = 422;
+  }
+
 };
 
 const movieDel = (req, res) => {
@@ -80,5 +100,6 @@ module.exports = {
   movieUrls,
   movieVotes,
   newMovie,
+  updateMovie,
   movieDel,
 };
