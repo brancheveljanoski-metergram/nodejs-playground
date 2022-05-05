@@ -1,5 +1,6 @@
 const { json } = require('express/lib/response');
 const fs = require('fs');
+const CodeError = require('../lib/custom-error');
 
 let path = './movies.json';
 const rawData = fs.readFileSync(path);
@@ -94,8 +95,7 @@ function getData(type) {
             }
 
         default:
-            return false;
-            break;
+            throw new CodeError('Data Type Not Supported', 400)
     }
 }
 
@@ -114,7 +114,7 @@ function writeToJSON(data) {
 function addMovie(newMovie) {
 
     if (getSingle(newMovie.imdbID) != undefined) {
-        return false;
+        throw new CodeError('Movie Already Exists', 400);
     }
     movies.push(newMovie);
 
@@ -122,11 +122,12 @@ function addMovie(newMovie) {
         return true
     };
 
-    return false;
+    throw new Error('Could Not Create Movie', 500);
 }
 
 
 function editMovie(editedMovie) {
+
     const movieIndex = movies.findIndex(movie => movie.imdbID == editedMovie.imdbID);
     movies[movieIndex] = editedMovie;
 
@@ -134,7 +135,7 @@ function editMovie(editedMovie) {
         return true
     };
 
-    return false;
+    throw new CodeError('Could Not Edit Movie', 500);
 }
 
 function deleteMovie(movieID) {
@@ -148,7 +149,7 @@ function deleteMovie(movieID) {
         return false;
     }
 
-    return false;
+    throw new CodeError('Movie Does Not Exist', 400);
 }
 
 

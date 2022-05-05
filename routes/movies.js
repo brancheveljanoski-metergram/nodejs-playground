@@ -1,86 +1,88 @@
 const express = require('express');
 const movies = require('../models/movie-manager');
 const validator = require('../validation-schemas');
+const { wrap } = require('../lib/error-handler');
+const CodeError = require('../lib/custom-error');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.use(express.json());
 
-    console.log(`Router get with req body ${req.query}`);
-    let movieList = movies.getAll(req.query)
+router.get('/', wrap((req, res) => {
 
-    res.status(200).json(movieList);
+    return movies.getAll(req.query);
 
-});
+}));
 
-router.get('/:imdbID', (req, res) => {
+
+
+router.get('/:imdbID', wrap((req, res) => {
 
     const imdbID = req.params.imdbID;
     const movie = movies.getSingle(imdbID);
     if (!movie) {
-        res.status(404).send(`Movie with imdbID of ${imdbID} not found!`);
+        throw new CodeError(`Movie with imdbID of ${imdbID} not found!`, code = 404);
     }
-    res.status(200).json(movie);
-});
+    return movie;
+}));
 
 
-router.get('/data/:dataType', (req, res) => {
-    res.status(200).json(movies.getData(req.params.dataType));
-});
+router.get('/data/:dataType', wrap((req, res) => {
+    return movies.getData(req.params.dataType);
+}));
 
-router.post('/', (req, res) => {
+router.post('/', wrap((req, res) => {
 
     const { error } = validator.validMovie.validate(req.body);
 
     if (error) {
-        res.status(400).json(error.details);
-        return;
+        throw new CodeError(error.details, 400);
     }
 
-    if (movies.addMovie(req.body)) {
-        res.status(201).send(`/${req.body.imdbID}`);
-    }
+    movies.addMovie(req.body)
 
-    res.status(400).end();
-});
+    return `/movies/${req.body.imdbID}`;
 
-router.put('/', (req, res) => {
+}));
+
+router.put('/', wrap((req, res) => {
 
     const { error } = validator.validMovie.validate(req.body);
 
     if (error) {
-        return res.status(400).json(error.details);
+        throw new CodeError(error.details, 400);
     }
 
     const movieID = req.body.imdbID;
 
-    if (movies.getByID(movieID)) {
-        if (movies.editMovie(req.body)) {
-            res.status(200).json({
-                status: 'ok',
-                data: movies.getByID(movieID),
-                path: `/${req.body.imdbID}`
-            });
+    if (movies.getSingle(movieID)) {
+
+        movies.editMovie(req.body)
+
+        return {
+            status: 'edited',
+            data: movies.getSingle(movieID),
+            path: `/movies/${req.body.imdbID}`
         }
-        return;
-    } else if (movies.addMovie(req.body)) {
-        res.status(201).json({
+
+    } else {
+
+        movies.addMovie(req.body)
+
+        return {
             status: 'created',
-            data: movies.getByID(movieID),
-            path: `/${req.body.imdbID}`
-        });
-        return;
+            data: movies.getSingle(movieID),
+            path: `/movies/${req.body.imdbID}`
+        }
     }
 
-    res.status(400).end();
-});
+}));
 
-router.delete('/:imdbID', (req, res) => {
-    const movieID = req.params.imdbID;
-    if (movies.deleteMovie(movieID)) {
-        return res.status(200).end();
-    }
-    res.status(400).end();
-});
+router.delete('/:imdbID', wrap((req, res) => {
+
+    movies.deleteMovie(req.params.imdbID);
+
+    return {};
+}));
 
 module.exports = router;
