@@ -41,8 +41,7 @@ router.post('/', wrap((req, res) => {
 
     movies.addMovie(req.body)
 
-    return `/movies/${req.body.imdbID}`;
-
+    return { path: `${req.baseUrl}/${req.body.imdbID}` };
 }));
 
 router.put('/', wrap((req, res) => {
@@ -62,7 +61,7 @@ router.put('/', wrap((req, res) => {
         return {
             status: 'edited',
             data: movies.getSingle(movieID),
-            path: `/movies/${req.body.imdbID}`
+            path: `${req.baseUrl}/${req.body.imdbID}`
         }
 
     } else {
@@ -72,7 +71,7 @@ router.put('/', wrap((req, res) => {
         return {
             status: 'created',
             data: movies.getSingle(movieID),
-            path: `/movies/${req.body.imdbID}`
+            path: `${req.baseUrl}/${req.body.imdbID}`
         }
     }
 
