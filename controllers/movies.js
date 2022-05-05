@@ -72,8 +72,8 @@ const updateMovie = async (req,res)=>{
       const updated = req.body;
       movies.forEach(movie =>{
         if(movie.Title === req.params.title){
-            movie.Title = updMovie.Title ? updMovie.Title : movie.Title;
-            res.json({msg: 'Movie updated', movie})
+            movie.Title = updated.Title ? updated.Title : movie.Title;
+            res.json(`Updated movie: ${movie}`)
         }
     })
     }
