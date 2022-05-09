@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const moviesRouter = require('./routes/movies');
+const moviesRouter = require('./routes/movies-router');
 
 const typeorm = require("typeorm");
 const Movie = require("./models/movie").Movie;

@@ -12,9 +12,11 @@ let movies = JSON.parse(rawData);
 
 function getAll({ genre, actor, imdbSort }) {
 
-    let movieList = dataSource.promise.then(
-        dataSource.source.find()
-    )
+    // let movieList = dataSource.promise.then(
+    //     dataSource.source.find()
+    // )
+
+    let movieList = movies;
 
     if (actor) {
         movieList = filterBy('Actors', actor)
