@@ -1,6 +1,7 @@
-const { json } = require('express/lib/response');
 const fs = require('fs');
 const CodeError = require('../lib/custom-error');
+
+const dataSource = require('../app');
 
 let path = './movies.json';
 const rawData = fs.readFileSync(path);
@@ -11,7 +12,9 @@ let movies = JSON.parse(rawData);
 
 function getAll({ genre, actor, imdbSort }) {
 
-    let movieList = movies;
+    let movieList = dataSource.promise.then(
+        dataSource.source.find()
+    )
 
     if (actor) {
         movieList = filterBy('Actors', actor)
@@ -30,6 +33,7 @@ function getAll({ genre, actor, imdbSort }) {
             movieList = sortByRating(false, movieList)
         }
     }
+
     return movieList;
 }
 
