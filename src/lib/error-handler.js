@@ -46,8 +46,5 @@ function getErrorHandler(res, err) {
 
 module.exports = {
     wrap
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 3486e8381729aee1a5988119d296b0c18ff5413b
+
