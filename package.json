@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
    "name": "nodejs-playground",
    "version": "1.0.0",
    "description": "",
@@ -215,5 +214,4 @@
     "url": "https://github.com/brancheveljanoski-metergram/nodejs-playground/issues"
   },
   "homepage": "https://github.com/brancheveljanoski-metergram/nodejs-playground#readme"
->>>>>>> 3486e8381729aee1a5988119d296b0c18ff5413b
 }
