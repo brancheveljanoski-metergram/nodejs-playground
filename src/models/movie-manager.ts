@@ -1,19 +1,26 @@
-const movies = require("../../movies");
+import { EntityManager, Repository } from "typeorm";
+import {Movie} from "../entity/Movie";
+import movies from "../movies.json";
 
-class MovieManager {
+import {validateMovie} from '../validation/validation-schema';
 
-    getAllMovies({ actor, genre, imdbSort }) {
-        let moviesFiltered = movies;
-        if (genre) {
-            moviesFiltered = movies.filter(m => m.Genre.includes(genre));
-        }
-        if (actor) {
-            moviesFiltered = movies.filter(m => m.Actors.toLowerCase().includes(actor.toLowerCase()));
-        }
-        if (imdbSort) {
-            moviesFiltered = sortItems(moviesFiltered, "imdbRating", imdbSort.toLowerCase() === 'desc')
-        }
-        return moviesFiltered;
+
+//interface Movie{
+//   id: string;
+//}
+
+export class MovieManager {
+    
+    private readonly moviesTable: Repository<Movie>;
+
+    constructor(private readonly tx: EntityManager) {
+        this.moviesTable = this.tx.getRepository(Movie);
+    }
+
+    async getMovies(): Promise<{ entities: Movie[]; total: number }> {
+        const [entities, total] = await this.moviesTable.findAndCount();
+
+        return { entities, total };
     }
 
     sortMoviesByRating(movieList) {
@@ -24,8 +31,13 @@ class MovieManager {
 
     }
 
-    getSpecificMovieById(id) {
-        return movies.find(movie => movie.imdbID == id)
+    async getSpecificMovieById(id:string):Promise<Movie> {
+        const movie = await this.moviesTable.findOneBy({imbdId: id})
+
+        if(movie){
+            return movie;
+        }
+        throw new Error("Movie does not exist!")
     }
 
     getMoviesData() {
@@ -45,22 +57,23 @@ class MovieManager {
                 0
             ),
             allLanguagues: [...new Set(
-                movies.reduce((languages, movie) => languages.concat(movie.Language.split(', ')), [])
+                movies.reduce((languages: string[], movie) => languages.concat(movie.Language.split(', ')), [])
             )]
         };
     }
 
-    addNewMovie(newMovie) {
-        const newMovie = {
-            title: req.body.Title,
-            genre: req.body.Genre
-        }
-        if (!newMovie.title || !newMovie.genre) {
-            return ({ msg: 'Please include a title and genre' })
+    addNewMovie(newMovie):Promise<Movie> {
+      
+        if(!validateMovie.validate(newMovie)){
+            throw new Error("Invalid movie!")
         }
 
-        movies.push(newMovie)
-
+        try{
+            return this.moviesTable.save(newMovie)
+        }catch(error){
+            console.log(error);
+            throw new Error("Faild to add new movie!");
+        }
     }
 
     editExistingMovie(movieToEdit) {
@@ -81,18 +94,20 @@ class MovieManager {
         }
     }
 
-    deleteExistingMovie(movieToDelete) {
-        const found = movies.some(movie => movie.Title === movieToDelete.title)
-
-        if (found) {
-            return ({
-                msg: 'Movie deleted', movies: movies.filter(movie =>
-                    movie.Title !== movieToDelete.title)
-            })
-        } else {
-            return ({ msg: `No movie with the title name of ${movieToDelete.title}` })
+    deleteMovie(movie) {
+        //find movie
+        //check if it exists 
+        if(!validateMovie){
+            throw new Error("Movie does not exist")
         }
+
+        try{
+            return this.moviesTable.remove(movie)
+        }catch(error){
+            console.log(error);
+            throw new Error("Faild to delete movie");
+        }
+        
     }
 }
 
-module.exports = { MovieManager }

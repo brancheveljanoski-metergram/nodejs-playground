@@ -1,6 +1,6 @@
-const Join = require('@hapi/joi')
+const Joi = require('joi')
 
-const validationSchema = Joi.object({
+export const validateMovie = Joi.object({
     Title: Joi.string(),
     Actors: Joi.string(),
     Year: Joi.number(),
@@ -10,7 +10,6 @@ const validationSchema = Joi.object({
         .pattern(new RegExp('^[0-9]{1,} min')),
     Genre: Joi.array()
         .items(Joi.string()),
-    Actors: Joi.string(),
     Language: Joi.string(),
     Country: Joi.string(),
     imdbRating: Joi.number()
@@ -24,6 +23,3 @@ const validationSchema = Joi.object({
         .pattern(new RegExp('(tt|nm|co|ev|ch|ni)\\w{5,10}')),
 })
 
-module.exports = {
-    validationSchema
-}
