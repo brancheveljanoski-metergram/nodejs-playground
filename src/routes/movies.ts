@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { EntityManager } from "typeorm";
-const { wrap } = require("../lib/error-handler");
+import { wrap } from "../lib/error-handler";
 import { MovieManager } from "../models/movie-manager";
 
 const router = express.Router()
@@ -11,34 +11,33 @@ router.get('/', wrap((_req: Request, _res: Response, tx: EntityManager) => {
 
 }))
 
-router.get('/:imbdID', wrap((_req: Request, _res: Response, tx: EntityManager) => {
+router.get('/:imbdID', wrap((req: Request, _res: Response, tx: EntityManager) => {
 
-        return new MovieManager(tx).getSpecificMovieById;
+    return new MovieManager(tx).getSpecificMovieById(req.params.imbdID);
 }))
 
 router.get('/data', wrap((_req: Request, _res: Response, tx: EntityManager) => {
 
     return new MovieManager(tx).getMoviesData();
+    
 }))
 
 router.post('/', wrap((req: Request, _res: Response, tx: EntityManager) => {
 
-
-        return new MovieManager(tx).addNewMovie(req.body)
-    
+    return new MovieManager(tx).addNewMovie(req.body)
 
 }))
 
-router.put('/', wrap((_req: Request, _res: Response, tx: EntityManager) => {
-    
-    new MovieManager(tx).editExistingMovie(_req.body)
-    
+router.put('/', wrap((req: Request, _res: Response, tx: EntityManager) => {
+
+    new MovieManager(tx).editExistingMovie(req.body)
+
 }))
 
-router.delete('/:imbdID', wrap((_req: Request, _res: Response, tx: EntityManager) => {
-    new MovieManager(tx).deleteMovie(_req.params.imbdID)
+router.delete('/delete/:imbdID', wrap((req: Request, _res: Response, tx: EntityManager) => {
 
-    return {success: true}
+    return new MovieManager(tx).deleteMovie(req.params.imbdID)
+
 }))
 
-module.exports = router 
+export default router;

@@ -1,16 +1,17 @@
 import { EntityManager, Repository } from "typeorm";
-import {Movie} from "../entity/Movie";
+import { Movie } from "../database/entities/Movie";
 import movies from "../movies.json";
 
-import {validateMovie} from '../validation/validation-schema';
+import { validateMovie } from '../validation/validation-schema';
 
-
-//interface Movie{
-//   id: string;
-//}
+export interface GetMoviesQuery {
+    actor?: string;
+    genre?: string[];
+    imdbSort?: string;
+}
 
 export class MovieManager {
-    
+
     private readonly moviesTable: Repository<Movie>;
 
     constructor(private readonly tx: EntityManager) {
@@ -21,23 +22,24 @@ export class MovieManager {
         const [entities, total] = await this.moviesTable.findAndCount();
 
         return { entities, total };
+
     }
 
-    sortMoviesByRating(movieList) {
+    async getSpecificMovieById(id: string): Promise<Movie> {
+        const movie = await this.moviesTable.findOne(id)
+
+        if (movie) {
+            return movie;
+        }
+        throw new Error("Movie does not exist!")
+    }
+
+    sortMoviesByRating(movieList: any) {
         const sortedMovies = movieList.sort((movie1, movie2) => movie1.imdbRating - movie2.imdbRating);
         const result = sortedMovies.map(movie => ({ Title: movie.Title, imdbRating: movie.imdbRating }))
 
         return result;
 
-    }
-
-    async getSpecificMovieById(id:string):Promise<Movie> {
-        const movie = await this.moviesTable.findOneBy({imbdId: id})
-
-        if(movie){
-            return movie;
-        }
-        throw new Error("Movie does not exist!")
     }
 
     getMoviesData() {
@@ -62,52 +64,49 @@ export class MovieManager {
         };
     }
 
-    addNewMovie(newMovie):Promise<Movie> {
-      
-        if(!validateMovie.validate(newMovie)){
+    async addNewMovie(newMovie: any): Promise<Movie> {
+
+        if (!validateMovie.validate(newMovie)) {
             throw new Error("Invalid movie!")
         }
 
-        try{
+        try {
             return this.moviesTable.save(newMovie)
-        }catch(error){
+        } catch (error) {
             console.log(error);
             throw new Error("Faild to add new movie!");
         }
     }
 
-    editExistingMovie(movieToEdit) {
-        const found = movies.some(movie => movie.Title === movieToEdit.title)
 
-        if (found) {
-            const updMovie = req.body;
-            movies.forEach(movie => {
-                if (movie.Title === movieToEdit.title) {
-                    movie.Title = updMovie.Title ? updMovie.Title : movie.Title;
-                    movie.Genre = updMovie.Genre ? updMovie.Genre : movie.Genre;
+    editExistingMovie(movie: Movie) {
+        const found = this.moviesTable.find()
 
-                    return ({ msg: 'Movie updated', movie })
-                }
-            })
-        } else {
-            return ({ msg: `No movie with the actor name of ${movieToEdit.title}` })
+        if (!found) {
+            return ({ msg: `No movie with the actor name of ${movie.title}` })
         }
+
+        this.moviesTable.update(movie.title, movie)
+        return { success: true }
     }
 
-    deleteMovie(movie) {
+    async deleteMovie(movie: any) {
         //find movie
         //check if it exists 
-        if(!validateMovie){
-            throw new Error("Movie does not exist")
-        }
+        const exists = this.moviesTable.find(movie)
+        if (exists) {
+            if (!validateMovie) {
+                throw new Error("Movie does not exist")
+            }
 
-        try{
-            return this.moviesTable.remove(movie)
-        }catch(error){
-            console.log(error);
-            throw new Error("Faild to delete movie");
+            try {
+                await this.moviesTable.remove(movie)
+            } catch (error) {
+                console.log(error);
+                throw new Error("Faild to delete movie");
+            }
         }
-        
+        throw new Error("Movie does not exist")
     }
 }
 
