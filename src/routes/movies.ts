@@ -6,9 +6,7 @@ import { MovieManager } from "../models/movie-manager";
 const router = express.Router()
 
 router.get('/', wrap((_req: Request, _res: Response, tx: EntityManager) => {
-
     return new MovieManager(tx).getMovies();
-
 }))
 
 router.get('/:imbdID', wrap((req: Request, _res: Response, tx: EntityManager) => {

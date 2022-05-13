@@ -1,14 +1,17 @@
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { DatabaseConnection } from "../database/connection";
 
 /**
  * Wraps a request handler or middleware in a way that should ensure that any errors are propagated correctly to the caller.
  * @param handler the handler to wrap. Must return a promise.
  * @return {Function} the wrapped handler function.
  */
-export function wrap(handler: any): (req: any, res: any) => Promise<any> {
-    return async (req, res) => {
-        try {
-            const result = await handler(req, res);
+export function wrap(handler: any) {
+    return async (req: Request, res: Response) => {
+        try {            
+            const entityManager = await new DatabaseConnection().getEntityManager();
+            const result = await handler(req, res, entityManager);
             const responseBody = JSON.stringify(result);
             res.set({
                 "Content-Type": "application/json",
@@ -16,7 +19,8 @@ export function wrap(handler: any): (req: any, res: any) => Promise<any> {
             });
             res.status(StatusCodes.OK);
             return res.send(result);
-        } catch (err) {
+        } catch (err) {            
+            console.error(err);
             return getErrorHandler(res, err);
         }
     };
